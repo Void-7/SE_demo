@@ -1,8 +1,9 @@
 import 'dart:math';
-import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
+import 'package:flex_demo/entity/news.dart';
 import 'package:flutter/material.dart';
+
+List<News> news = [];
+List<Widget> cards = [];
 
 class HomePage extends StatefulWidget {
   HomePage() {
@@ -40,9 +41,13 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-            body: assDisplay(),
+            body: Column(children: [
+              Flexible(
+                child: assDisplay(),
+              )
+            ]),
             floatingActionButton: FloatingActionButton(
-                onPressed: getNews,
+                onPressed: () {},
                 backgroundColor: Colors.white,
                 child: Icon(Icons.edit, size: 30, color: Colors.deepPurple))));
   }
@@ -60,66 +65,60 @@ String cov2w(num x) {
       : x.toString();
 }
 
-final _news = [];
-
+// ignore: camel_case_types
 class assDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        SizedBox(height: 3),
-        Container(
-            margin: EdgeInsets.all(3),
-            height: 160,
-            decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-                image: DecorationImage(
-                    image: AssetImage('images/rec.png'), fit: BoxFit.cover)),
-            child: Center(
-              child: Text('Recommend',
-                  style: TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white)),
-            )),
-        // Dynamic(),
-        SizedBox(height: 4),
-      ],
+    return FutureBuilder(
+      future: getNews(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _ProgressIndicator();
+        } else if (snapshot.connectionState == ConnectionState.done) {
+          return _createListView(context, snapshot);
+        } else
+          throw 'loading error';
+      },
     );
   }
-}
 
-getNews() async {
-  final res = await http.get(
-      'https://newsapi.org/v2/top-headlines?country=us&apiKey=e66f80f120db4635ac604c5fbbfff67c');
-  if (res.statusCode == 200) {
-    print(res.body);
-    // Map json = convert.jsonDecode(res.body);
-    // json.
-    // var news = News.fromJson(json);
-    // print(news);
-  } else {
-    print('oops');
+  // ignore: non_constant_identifier_names
+  Widget _ProgressIndicator() {
+    return Center(
+        child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation(Colors.pink[300]),
+            strokeWidth: 8));
   }
-}
 
-class News {
-  String author;
-  String title;
-  String content;
-  String date;
+  Widget _createListView(BuildContext context, AsyncSnapshot snapshot) {
+    news = snapshot.data;
+    return ListView.builder(
+        itemBuilder: (context, index) => _itemBuilder(context, index, news),
+        itemCount: news.length + 1);
+  }
 
-  News.fromJson(Map<String, dynamic> json)
-      : author = json['author'],
-        title = json['title'],
-        content = json['content'],
-        date = json['publishAt'];
-
-  News({this.author, this.title, this.content, this.date});
-  @override
-  String toString() {
-    return 'author:${this.author} title:${this.title} date:${this.date} content:${this.content}';
+  Widget _itemBuilder(context, index, news) {
+    if (index == 0)
+      return Container(
+          margin: EdgeInsets.all(3),
+          height: 160,
+          decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+              image: DecorationImage(
+                  image: AssetImage('images/rec.png'), fit: BoxFit.cover)),
+          child: Center(
+            child: Text('Recommend',
+                style: TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)),
+          ));
+    return Dynamic(
+        author: news[index - 1].author,
+        title: news[index - 1].title,
+        content: news[index - 1].content,
+        date: news[index - 1].date);
   }
 }
 
@@ -135,7 +134,8 @@ class Dynamic extends StatelessWidget {
     var text = Text(this.date, style: TextStyle(color: Colors.black54));
     return Container(
         margin: EdgeInsets.all(3),
-        height: 205,
+        constraints: BoxConstraints(maxHeight: 180.0),
+        // height: 180,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(20)),
             color: Color.fromRGBO(245, 245, 245, 0.9)),

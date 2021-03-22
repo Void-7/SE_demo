@@ -4,6 +4,7 @@ import 'home.dart';
 import 'profile.dart';
 import 'digit.dart';
 
+// ignore: camel_case_types
 class index extends StatefulWidget {
   index() {
     print('index()');
@@ -12,6 +13,7 @@ class index extends StatefulWidget {
   _stateIndex createState() => _stateIndex();
 }
 
+// ignore: camel_case_types
 class _stateIndex extends State<index> {
   _stateIndex() {
     print('_stateIndex()');

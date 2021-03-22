@@ -19,3 +19,7 @@ This project is only for frontend since the backend depends on Spring/SpringMVC/
 - Like(Posts/Products)
 - Grade Products(Mark/Comment)
 - Search(Products/Posts)
+
+## Problems to be solved
+
+- **Home Page Refreshes When Revisited**
