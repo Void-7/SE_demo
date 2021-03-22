@@ -9,7 +9,8 @@ Future<List<News>> getNews() async {
     Map jsonMap = jsonDecode(res.body);
     var data = Data.fromJson(jsonMap);
     return data.articles;
-  } 
+  } else
+    return null;
 }
 
 class Data {
