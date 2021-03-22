@@ -22,4 +22,4 @@ This project is only for frontend since the backend depends on Spring/SpringMVC/
 
 ## Problems to be solved
 
-- [ ]**Home Page Refreshes When Revisited**
+- [ ] **Home Page Refreshes When Revisited**
